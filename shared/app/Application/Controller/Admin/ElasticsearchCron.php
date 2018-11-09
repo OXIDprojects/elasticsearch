@@ -74,34 +74,61 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
      */
     public function CreateArticleIndex()
     {
+        $aLanguages = self::GetAllLang();
+        foreach ($aLanguages as $aLang) {
+            self::CreateArticleIndexOneLang($aLang['id']);
+        }    
+        return '1';
+    } 
+ 
+     /*
+     *
+     */
+    public function CreateArticleIndexOneLang($Lang)
+    {
+         $index = self::GetModuleConfVar('oxcom_elasticsearch_article_index') . "_" . $Lang;
          $client = self::elasticclient();
          $params = [
-             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
+             'index' => $index,
              'body'  => [
                  'settings' => [
-                     'number_of_shards'   => self::GetModuleConfVar('oxcom_elasticsearch_article_shards');
-                     'number_of_replicas' => self::GetModuleConfVar('oxcom_elasticsearch_article_replicas');
+                     'number_of_shards'   => self::GetModuleConfVar('oxcom_elasticsearch_article_shards'),
+                     'number_of_replicas' => self::GetModuleConfVar('oxcom_elasticsearch_article_replicas')
                  ]
              ]
          ];
          $response = $client->indices()->create($params);
          return $response;
-    } 
+    }
 
     /*
      *
      */
     public function DeleteArticleIndex()
     {
+        $aLanguages = self::GetAllLang();
+        foreach ($aLanguages as $aLang) {
+            self::DeleteArticleIndexOneLang($aLang['id']);
+        }  
+        return '1';
+    }  
+ 
+ 
+    /*
+     *
+     */
+    public function DeleteArticleIndexOneLang($Lang='0')
+    {
+         $index = self::GetModuleConfVar('oxcom_elasticsearch_article_index') . "_" . $Lang;
          $client = self::elasticclient();
          $params = [
-             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
+             'index' => $index
          ];
          $response = $client->indices()->delete($params);
          return $response;
     }  
  
-    /*
+     /*
      *
      */
     public function RecreateArticleIndex()
@@ -128,24 +155,74 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
         }  else {
             return '1';
         }
+    } 
+ 
+    /*
+     *
+     */
+    public function RecreateArticleIndexOneLang($Lang='0')
+    {
+        // Delete Index
+        $info = self::DeleteArticleIndexOneLang($Lang)
+        
+        if ($info->acknowleged <> 1) {
+            return 'Index could not be deleted!';
+        }  
+     
+        // Create Index
+        $info = self::CreateArticleIndexOneLang($Lang)
+        
+        if ($info->acknowleged <> 1) {
+            return 'Index could not be created!';
+        }          
+     
+        // Reset all Articles for new Import
+        $info = self::MarkAllArticle4NewImportOneLang($Lang)
+        
+        if ($info->acknowleged <> 1) {
+            return 'Articles were not reseted!';
+        }  else {
+            return '1';
+        }
     }   
+
+     /*
+     *
+     */
+    public function GetAllLang()
+    {
+        $myLang = \OxidEsales\Eshop\Core\Registry::getLang();
+        return $myLang->getLanguageArray(null, true, false);
+    }  
  
     /*
      *
      */
     public function MarkAllArticle4NewImport()
     {
-        $sQ = "UPDATE oxarticles SET oxcomelasticstat = '0'; UPDATE oxarticles SET oxcomelasticstat = '1' WHERE oxactive = '1'";
-        $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb();
-        $oDb->execute($sQ);
-     
+        $aLanguages = self::GetAllLang();
+        foreach ($aLanguages as $aLang) {
+            self::MarkAllArticle4NewImportOneLang($aLang['id']);
+        }        
         return '1';
     }  
  
     /*
      *
      */
-    public function IndexArticle2Elasticsearch($oxid)
+    public function MarkAllArticle4NewImportOneLang($iLang = '0')
+    {
+        $table = getViewName('oxobject2attribute', $iLang);    
+        $sQ = "UPDATE ".$table." SET oxcomelasticstat = '0'; UPDATE ".$table." SET oxcomelasticstat = '1' WHERE oxactive = '1'";
+        $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb();
+        $oDb->execute($sQ);
+        return '1';
+    }   
+ 
+    /*
+     *
+     */
+    public function IndexArticle2Elasticsearch($oxid,$Lang = '0')
     {
          $client = self::elasticclient();
      
@@ -153,12 +230,12 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
          //$oxarticle = oxNew(\OxidEsales\Eshop\Application\Model\Article::class);    
          //$oxarticle->load($oxid);    
      
-         $oxarticle = self::GetArticleData($oxid);
+         $oxarticle = self::GetArticleData($oxid, $Lang);
      
          $params = [
-             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
-             'type'  => self::GetModuleConfVar('oxcom_elasticsearch_article_type');
-             'id'    => $oxid
+             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index'),
+             'type'  => self::GetModuleConfVar('oxcom_elasticsearch_article_type'),
+             'id'    => $oxid,
              'body'  => [
                  (array) $oxarticle
              ]
@@ -170,7 +247,7 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
     /*
      *
      */
-    public function GetArticleData($oxid)
+    public function GetArticleData($oxid, $Lang='0')
     {
         $data = self::GetModuleConfVar('oxcom_elasticsearch_article_data');
 
@@ -180,6 +257,7 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
         
         //we do magic
         foreach ($adata as $table => $param) {
+            $table = getViewName($table, $Lang);
             $sQ = "";
             $rowparam = "0";
             $columnparam = "0";
@@ -274,7 +352,7 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
     /*
      *
      */
-    public function SearchArticleFromElasticsearch($params)
+    public function SearchArticleFromElasticsearch($search,$Lang='0')
     {
          // Performance
          if (!is_array($params)) {
@@ -284,11 +362,11 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
          $client = self::elasticclient(); 
      
          $params = [
-             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
-             'type'  => self::GetModuleConfVar('oxcom_elasticsearch_article_type');
+             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index'),
+             'type'  => self::GetModuleConfVar('oxcom_elasticsearch_article_type'),
              'body'  => [
                  'match' => [
-                     $params;
+                     $search
                  ]
              ]
          ];
@@ -300,13 +378,15 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
      /*
      *
      */
-    public function CronAddArticle2Index($Limit)
+    public function CronAddArticle2Index($Limit, $Lang='0')
     {
          if (!is_numeric($Limit)) { 
              return 'Bullshit'; 
          }
         
-         $sQ = "Select oxid from oxarticles WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT ".$Limit;
+         $table = getViewName('oxarticles', $Lang);
+     
+         $sQ = "Select oxid from ".$table." WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT ".$Limit;
          $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(); 
      
          $resultSet = $oDb::getDb()->select($sQ);
@@ -316,14 +396,14 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
                  $row = $resultSet->getFields();
                  $final = self::IndexArticle2Elasticsearch($row['oxid']);
                  if ($final == '1') {
-                    $sFinalQ = "UPDATE oxarticles SET oxcomelasticstat= '0' WHERE oxid=".$oDb->quote($row['oxid']);
+                    $sFinalQ = "UPDATE ".$table." SET oxcomelasticstat= '0' WHERE oxid=".$oDb->quote($row['oxid']);
                     $oDb::getDb()->execute($sQ);
                  }
                  $resultSet->fetchRow();
              }
           }
     
-          $sQ2 = "Select oxid from oxarticles WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT 1";
+          $sQ2 = "Select oxid from ".$table." WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT 1";
           $resultSet2 = $oDb::getDb()->select($sQ2);
           if ($resultSet != false && $resultSet->count() > 0) {
               return '0';
