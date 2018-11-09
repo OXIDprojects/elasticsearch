@@ -21,13 +21,13 @@ DEBIAN_FRONTEND=noninteractive apt-get -y --allow-downgrades --allow-remove-esse
 DEBIAN_FRONTEND=noninteractive apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends  install elasticsearch && \
 apt-get clean all "
 
-COPY $PWD/oxid.sql /opt/oxid.sql
+COPY $PWD/oxid.sql /usr/local/etc/oxid.sql
 RUN bin/bash -c "mkdir /var/run/mysqld/ && \
 chown -R mysql:mysql /var/lib/mysql /var/run/mysqld && \
 service mysql start && \ 
 mysql -e 'create database oxid' && \
-mysql oxid < /opt/oxid.sql"
+mysql oxid < /usr/local/etc/oxid.sql"
 
-ADD $PWD/shared/ /var/www/html/
-COPY $PWD/entrypoint.sh /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
+ADD $PWD/shared/ /opt/
+COPY $PWD/entrypoint.sh /usr/local/etc/entrypoint.sh
+ENTRYPOINT ["/usr/local/etc/entrypoint.sh"]
