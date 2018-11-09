@@ -17,7 +17,7 @@ echo \"deb https://artifacts.elastic.co/packages/6.x/apt stable main\" | tee -a 
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys D27D666CD88E42B4 && \
 apt-get -y update && \
-DEBIAN_FRONTEND=noninteractive apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends  install tzdata apache2 php libapache2-mod-php mysql-server php-cli php-intl mcrypt php-mysql php-gd php-curl php-xml php-bcmath php-mbstring php-soap oracle-java8-installer && \
+DEBIAN_FRONTEND=noninteractive apt-get -y --allow-downgrades --allow-remove-essential --allow-change-held-packages --no-install-recommends  install tzdata apache2 php libapache2-mod-php mysql-server php-cli php-intl mcrypt php-mysql php-gd php-curl php-xml php-bcmath php-mbstring php-soap oracle-java8-installer elasticsearch && \
 apt-get clean all "
 
 COPY $PWD/oxid.sql /opt/oxid.sql
