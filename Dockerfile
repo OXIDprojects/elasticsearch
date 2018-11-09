@@ -8,7 +8,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-8-oracle
 ## INSTALL PACKAGES
 RUN /bin/bash -c "ln -sf /usr/share/zoneinfo/Europe/Berlin /etc/localtime; \ 
 apt-get -y update && \
-DEBIAN_FRONTEND=noninteractive apt-get install software-properties-common apt-transport-https wget -y && \ 
+DEBIAN_FRONTEND=noninteractive apt-get install software-properties-common apt-transport-https wget vim zip unzip composer -y && \ 
 echo \"oracle-java8-installer shared/accepted-oracle-license-v1-1 select true\" | debconf-set-selections && \
 add-apt-repository ppa:webupd8team/java && \
 echo \"deb https://artifacts.elastic.co/packages/6.x/apt stable main\" | tee -a /etc/apt/sources.list.d/elastic-6.x.list && \
