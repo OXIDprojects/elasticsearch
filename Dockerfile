@@ -24,7 +24,8 @@ RUN bin/bash -c "mkdir /var/run/mysqld/ && \
 chown -R mysql:mysql /var/lib/mysql /var/run/mysqld && \
 service mysql start && \ 
 mysql -e 'create database oxid' && \
-mysql oxid < /usr/local/etc/oxid.sql"
+mysql oxid < /usr/local/etc/oxid.sql && \
+a2enmod rewrite"
 
 COPY $PWD/entrypoint.sh /usr/local/etc/entrypoint.sh
 ENTRYPOINT ["/usr/local/etc/entrypoint.sh"]

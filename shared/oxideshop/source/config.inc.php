@@ -145,7 +145,7 @@
     $this->blDoNotDisableModuleOnError = false;
 
     // Enable temporarily in case you can't access the backend due to broken views
-    $this->blSkipViewUsage = false;
+    $this->blSkipViewUsage = true;
 
     /**
      * Enterprise Edition related config options.
