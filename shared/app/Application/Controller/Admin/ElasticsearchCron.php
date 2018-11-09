@@ -1,7 +1,7 @@
 <?php
 namespace OxidCommunity\Elasticsearch\Application\Controller\Admin;
 /**
- * Order class wrapper 
+ * ElasticsearchCron class wrapper 
  */
  
 class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\AdminController
