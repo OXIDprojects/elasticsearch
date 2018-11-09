@@ -50,12 +50,6 @@ $aModule = [
         ),
         array(
             'group' => 'oxcomelasticsearchserverarticle',
-            'name'  => 'oxcom_elasticsearch_article_id',
-            'type'  => 'str',
-            'value' => 'oxarticle'
-        ),
-        array(
-            'group' => 'oxcomelasticsearchserverarticle',
             'name'  => 'oxcom_elasticsearch_article_shards',
             'type'  => 'str',
             'value' => '2'
