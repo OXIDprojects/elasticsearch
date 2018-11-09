@@ -1,7 +1,5 @@
 FROM ubuntu:18.04
-
 LABEL descritption="Oxid 6"
-
 MAINTAINER "Tobias Veit <t.veit@syseleven.de>"
 
 ## JAVA_HOME
@@ -28,6 +26,5 @@ service mysql start && \
 mysql -e 'create database oxid' && \
 mysql oxid < /usr/local/etc/oxid.sql"
 
-ADD $PWD/shared/ /opt/
 COPY $PWD/entrypoint.sh /usr/local/etc/entrypoint.sh
 ENTRYPOINT ["/usr/local/etc/entrypoint.sh"]

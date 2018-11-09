@@ -6,16 +6,16 @@
 
     // Database connection information
     $this->dbType = 'pdo_mysql';
-    $this->dbHost = '<dbHost>'; // database host name
+    $this->dbHost = 'localhost'; // database host name
     $this->dbPort  = 3306; // tcp port to which the database is bound
-    $this->dbName = '<dbName>'; // database name
-    $this->dbUser = '<dbUser>'; // database user name
-    $this->dbPwd  = '<dbPwd>'; // database user password
-    $this->sShopURL     = '<sShopURL>'; // eShop base url, required
+    $this->dbName = 'oxid'; // database name
+    $this->dbUser = 'oxid'; // database user name
+    $this->dbPwd  = 'oxid'; // database user password
+    $this->sShopURL     = 'http://localhost/'; // eShop base url, required
     $this->sSSLShopURL  = null;            // eShop SSL url, optional
     $this->sAdminSSLURL = null;            // eShop Admin SSL url, optional
-    $this->sShopDir     = '<sShopDir>';
-    $this->sCompileDir  = '<sCompileDir>';
+    $this->sShopDir     = '/var/www/html/';
+    $this->sCompileDir  = '/var/www/source/';
 
     /**
      * Force shop edition. Even if enterprise or professional packages exists, shop edition can still be forced here.
