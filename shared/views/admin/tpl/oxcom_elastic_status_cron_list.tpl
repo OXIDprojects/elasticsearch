@@ -31,6 +31,9 @@
             </a>     
         </td>
         <td>
+            <a href="[{$sModuleUrl}]Cronjob/MarkAllArticles4Reimport.php" target="_blank">
+                <input type="submit" value="[{ oxmultilang ident="OXCOM_ELASTICSEARCH_ARTICLE_MARK4REIMPORT" }]">
+            </a>  
         </td>
     </tr>
     <tr>
@@ -44,6 +47,7 @@
             [{ oxmultilang ident="OXCOM_ELASTICSEARCH_ARTICLE_INDEXALLMISSING_HELP" }]
         </td>
         <td>
+            [{ oxmultilang ident="OXCOM_ELASTICSEARCH_ARTICLE_MARK4REIMPORT_HELP" }]
         </td>
     </tr>
 </table>
