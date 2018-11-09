@@ -28,7 +28,7 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
         $sLogValue = self::GetModuleConfVar('oxcom_elasticsearch_article_loglevel');
      
         $retry = self::GetModuleConfVar('');
-        $logger = ClientBuilder::defaultLogger($sPath.'logs/', Logger::$sLogValue);
+        $logger = ClientBuilder::defaultLogger($sPath.'Logs/', Logger::$sLogValue);
 
         $host1 = array();
         $host1['host'] = self::GetModuleConfVar('oxcom_elasticsearch_server_host');
