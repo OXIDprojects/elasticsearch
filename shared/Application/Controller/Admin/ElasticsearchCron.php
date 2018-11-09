@@ -41,7 +41,7 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
     /*
      *
      */
-    public function createarticleindex()
+    public function CreateArticleIndex()
     {
          $client = self::elasticclient();
          $params = [
@@ -56,6 +56,60 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
          $response = $client->indices()->create($params);
          return $response;
     } 
+
+    /*
+     *
+     */
+    public function DeleteArticleIndex()
+    {
+         $client = self::elasticclient();
+         $params = [
+             'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
+         ];
+         $response = $client->indices()->delete($params);
+         return $response;
+    }  
+ 
+    /*
+     *
+     */
+    public function RecreateArticleIndex()
+    {
+        // Delete Index
+        $info = self::DeleteArticleIndex()
+        
+        if ($info->acknowleged <> 1) {
+            return 'Index could not be deleted!';
+        }  
+     
+        // Create Index
+        $info = self::CreateArticleIndex()
+        
+        if ($info->acknowleged <> 1) {
+            return 'Index could not be created!';
+        }          
+     
+        // Reset all Articles for new Import
+        $info = self::MarkAllArticle4NewImport()
+        
+        if ($info->acknowleged <> 1) {
+            return 'Articles were not reseted!';
+        }  else {
+            return '1';
+        }
+    }   
+ 
+    /*
+     *
+     */
+    public function MarkAllArticle4NewImport()
+    {
+        $sQ = "UPDATE oxarticles SET oxcomelasticstat = '0'; UPDATE oxarticles SET oxcomelasticstat = '1' WHERE oxactive = '1'";
+        $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb();
+        $oDb->execute($sQ);
+     
+        return '1';
+    }  
  
     /*
      *
@@ -104,4 +158,39 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
          $response = $client->search($params);
          return $response;
     }    
+ 
+     /*
+     *
+     */
+    public function CronAddArticle2Index($Limit)
+    {
+         if (!is_numeric($Limit)) { 
+             return 'Bullshit'; 
+         }
+        
+         $sQ = "Select oxid from oxarticles WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT ".$Limit;
+         $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(); 
+     
+         $resultSet = $oDb::getDb()->select($sQ);
+
+         if ($resultSet != false && $resultSet->count() > 0) {
+             while (!$resultSet->EOF) {
+                 $row = $resultSet->getFields();
+                 $final = self::IndexArticle2Elasticsearch($row['oxid']);
+                 if ($final == '1') {
+                    $sFinalQ = "UPDATE oxarticles SET oxcomelasticstat= '0' WHERE oxid=".$oDb->quote($row['oxid']);
+                    $oDb::getDb()->execute($sQ);
+                 }
+                 $resultSet->fetchRow();
+             }
+          }
+    
+          $sQ2 = "Select oxid from oxarticles WHERE oxactive = '1' AND oxcomelasticstat= '1' LIMIT 1";
+          $resultSet2 = $oDb::getDb()->select($sQ2);
+          if ($resultSet != false && $resultSet->count() > 0) {
+              return '0';
+          } else {
+              return '1';
+          }
+    } 
 }
