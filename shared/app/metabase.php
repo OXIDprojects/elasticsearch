@@ -44,6 +44,16 @@ $aModule = [
         ),
         array(
             'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_data',
+            'type'  => 'aarr',
+            'value' => array(
+                           'oxarticles' => array('row','all','oxid'),
+                           'oxobject2attribute' => array('column','oxattrid','oxvalue','oxobjectid'),
+                           'oxartextends' => array('row',array('oxlongdesc'),'oxid'),
+                       )
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
             'name'  => 'oxcom_elasticsearch_article_type',
             'type'  => 'str',
             'value' => 'oxarticle'
