@@ -19,3 +19,8 @@ After cleaning up it will build and run the docker image. Followed by entering
 the container.
 
 Ready to go.
+
+## Test Environment
+
+Currently there is running a distributed Oxid 6.1 Setup at
+https://oxid.jakobspielt.de/. The depoloyment Process will follow.
