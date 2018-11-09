@@ -29,6 +29,36 @@ $aModule = [
         'oxcom_elastic_status_admin_list' =>  \OxidCommunity\Elasticsearch\Application\Controller\Admin\ElasticsearchStatus::class,
         'oxcom_elastic_status_cron_list'  =>  \OxidCommunity\Elasticsearch\Application\Controller\Admin\ElasticsearchCron::class
     ],
+    'events' => [
+        'onActivate'   				=> '\OxidCommunity\Elasticsearch\Core\Events::onActivate',
+        'onDeactivate' 				=> '\OxidCommunity\Elasticsearch\Core\Events::onDeactivate'
+    ],
     'templates'   => [
     ],
+    'settings' => [
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_index',
+            'type'  => 'str',
+            'value' => 'oxcomarticle'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_type',
+            'type'  => 'str',
+            'value' => 'oxarticle'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_shards',
+            'type'  => 'str',
+            'value' => '2'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_replicas',
+            'type'  => 'str',
+            'value' => '0'
+        )        
+    ]
 ];
