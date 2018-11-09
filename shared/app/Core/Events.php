@@ -14,7 +14,10 @@ class Events
      * @var array
      */
     private static $_aSetupOxcomOxarticleSQLs = array(
-        "OXCOMELASTICSTAT"     => "ALTER TABLE `oxarticles` ADD `OXCOMELASTICSTAT` TINYINT( 1 ) UNSIGNED NOT NULL default '0';"
+        "OXCOMELASTICSTAT"       => "ALTER TABLE `oxarticles` ADD `OXCOMELASTICSTAT` TINYINT( 1 ) UNSIGNED NOT NULL default '0';"
+        "OXCOMELASTICSTAT_1"     => "ALTER TABLE `oxarticles` ADD `OXCOMELASTICSTAT_1` TINYINT( 1 ) UNSIGNED NOT NULL default '0';"
+        "OXCOMELASTICSTAT_2"     => "ALTER TABLE `oxarticles` ADD `OXCOMELASTICSTAT_2` TINYINT( 1 ) UNSIGNED NOT NULL default '0';"
+        "OXCOMELASTICSTAT_3"     => "ALTER TABLE `oxarticles` ADD `OXCOMELASTICSTAT_3` TINYINT( 1 ) UNSIGNED NOT NULL default '0';"
     );
     
     /**
