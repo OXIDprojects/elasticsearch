@@ -59,6 +59,42 @@ $aModule = [
             'name'  => 'oxcom_elasticsearch_article_replicas',
             'type'  => 'str',
             'value' => '0'
-        )        
+        ),        
+        array(
+            'group' => 'oxcomelasticsearchserverarticle',
+            'name'  => 'oxcom_elasticsearch_article_loglevel',
+            'type'  => 'str',
+            'value' => 'Info'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserver',
+            'name'  => 'oxcom_elasticsearch_server_host',
+            'type'  => 'str',
+            'value' => 'localhost'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserver',
+            'name'  => 'oxcom_elasticsearch_server_port',
+            'type'  => 'str',
+            'value' => '9200'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserver',
+            'name'  => 'oxcom_elasticsearch_server_scheme',
+            'type'  => 'str',
+            'value' => 'https'
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserver',
+            'name'  => 'oxcom_elasticsearch_server_user',
+            'type'  => 'str',
+            'value' => ''
+        ),
+        array(
+            'group' => 'oxcomelasticsearchserver',
+            'name'  => 'oxcom_elasticsearch_server_pass',
+            'type'  => 'str',
+            'value' => ''
+        )
     ]
 ];
