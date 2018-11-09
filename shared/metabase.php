@@ -26,6 +26,8 @@ $aModule = [
     'extend'      => [
     ],
     'controllers' => [
+        'oxcom_elastic_status_admin_list' =>  \OxidCommunity\Elasticsearch\Application\Controller\Admin\ElasticsearchStatus::class,
+        'oxcom_elastic_status_cron_list'  =>  \OxidCommunity\Elasticsearch\Application\Controller\Admin\ElasticsearchCron::class
     ],
     'templates'   => [
     ],
