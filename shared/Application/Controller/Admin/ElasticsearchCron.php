@@ -13,6 +13,8 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
     public function render()
     {
         parent::render();
+        $oViewConf = oxNew(\OxidEsales\Eshop\Core\ViewConfig::class);
+        $this->_aViewData["sModuleUrl"] = $oViewConf->getModuleUrl('oxcom/elasticsearch');
         return $this->_sThisTemplate;
     }
     /*
@@ -20,8 +22,37 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
      */
     public function elasticclient()
     {
-         $client = Elasticsearch\ClientBuilder::create()->build();
-         return $client;
+        $oViewConf = oxNew(\OxidEsales\Eshop\Core\ViewConfig::class);
+        $sPath = $oViewConf->getModuleUrl('oxcom/elasticsearch');
+     
+        $sLogValue = self::GetModuleConfVar('oxcom_elasticsearch_article_loglevel');
+     
+        $retry = self::GetModuleConfVar('');
+        $logger = ClientBuilder::defaultLogger($sPath.'logs/', Logger::$sLogValue);
+
+        $host1 = array();
+        $host1['host'] = self::GetModuleConfVar('oxcom_elasticsearch_server_host');
+        $host1['port'] = self::GetModuleConfVar('oxcom_elasticsearch_server_port');
+        $host1['scheme'] = self::GetModuleConfVar('oxcom_elasticsearch_server_scheme');
+     
+        $sUser = self::GetModuleConfVar('');
+        if (!empty($sUser)) {
+            $host1['user'] = self::GetModuleConfVar('oxcom_elasticsearch_server_user');    
+        }
+     
+        $sPass = self::GetModuleConfVar('');
+        if (!empty($sPass)) {
+            $host1['pass'] = self::GetModuleConfVar('oxcom_elasticsearch_server_pass'); 
+        }
+     
+        $hosts = [
+            [
+                $host1
+            ]
+        ];
+     
+        $client = Elasticsearch\ClientBuilder::create()->setHosts($hosts)->setLogger($logger)->setRetries($retry)->build();
+        return $client;
     }
  
     /*
