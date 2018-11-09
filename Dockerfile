@@ -6,4 +6,4 @@ MAINTAINER "Tobias Veit <t.veit@syseleven.de>"
 
 RUN apt -y update && DEBIAN_FRONTEND=noninteractive apt -y install tzdata apache2 php libapache2-mod-php
 
-CMD while true; do sleep 10; done
+CMD /etc/init.d/apache2 start
