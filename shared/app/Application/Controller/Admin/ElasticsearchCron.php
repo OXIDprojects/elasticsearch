@@ -149,8 +149,11 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
     {
          $client = self::elasticclient();
      
-         $oxarticle = oxNew(\OxidEsales\Eshop\Application\Model\Article::class);    
-         $oxarticle->load($oxid);    
+         //doesn't work! first article needs all parameters
+         //$oxarticle = oxNew(\OxidEsales\Eshop\Application\Model\Article::class);    
+         //$oxarticle->load($oxid);    
+     
+         $oxarticle = self::GetArticleData($oxid);
      
          $params = [
              'index' => self::GetModuleConfVar('oxcom_elasticsearch_article_index');
@@ -163,6 +166,110 @@ class ElasticsearchCron extends \OxidEsales\Eshop\Application\Controller\Admin\A
          $response = $client->index($params);
          return $response;
     } 
+
+    /*
+     *
+     */
+    public function GetArticleData($oxid)
+    {
+        $data = self::GetModuleConfVar('oxcom_elasticsearch_article_data');
+
+        $oDb = \OxidEsales\Eshop\Core\DatabaseProvider::getDb();
+        
+        $aFinalQuery = array();
+        
+        //we do magic
+        foreach ($adata as $table => $param) {
+            $sQ = "";
+            $rowparam = "0";
+            $columnparam = "0";
+        
+            if ($param[0] == 'row') {
+                $sQ = "SELECT ";
+                if ($param[1] == 'all') {
+                    $sQ .= $table.".* ";
+                } else {
+                    foreach ((array) $param[1] as $value) {
+                        if ($rowparam == '1') {
+                            $sQ .= ", ";
+                        }
+                        $sQ .= $table.".".$value;
+                        $rowparam = '1';
+                    }
+                }
+                $sQ .= " FROM ".$table." WHERE ".$param[2]."=".$oDb->quote($oxid);
+        
+                $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQ);
+                //Fetch the results row by row
+                if ($resultSet != false && $resultSet->count() > 0) {
+                    while (!$resultSet->EOF) {
+                        $row = $resultSet->getFields();
+        
+                        if($table == 'oxarticles') {
+                            $aFinalQuery = $row;
+                        } else {
+                            $aFinalQuery[$table] = $row;
+                        }
+        
+                        $resultSet->fetchRow();
+                    }
+                }
+                continue;
+            }
+        
+            if ($param[0] == 'column') {
+                $sQ = "SELECT ";
+                $sQD = "Select ".$table.".".$param[1]." as col FROM ".$table." GROUP BY ".$table.".".$param[1];
+                $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb()->select($sQD);
+                //Fetch the results row by row
+                if ($resultSet != false && $resultSet->count() > 0) {
+                    while (!$resultSet->EOF) {
+                        $row = $resultSet->getFields();
+                        if ($columnparam == '1') {
+                            $sQ .= ", ";
+                        }
+                        $sQ .= "GROUP_CONCAT(CASE WHEN ".$table.".".$param[1]." = ".$oDb->quote($row[0])." THEN  ".$table.".".$param[2]." ELSE NULL END) AS ".$oDb->quote($row[0]);
+                        $columnparam = '1';
+                        $resultSet->fetchRow();
+                    }
+                }
+                $sQ .= "FROM ".$table." WHERE ".$param[3]."=".$oDb->quote($oxid);
+        
+                $resultSet = \OxidEsales\Eshop\Core\DatabaseProvider::getDb(\OxidEsales\Eshop\Core\DatabaseProvider::FETCH_MODE_ASSOC)->select($sQ);
+                //Fetch the results row by row
+                if ($resultSet != false && $resultSet->count() > 0) {
+                    while (!$resultSet->EOF) {
+                        $row = $resultSet->getFields();
+        
+                        $aFinalQuery[$table] = $row;
+        
+                        $resultSet->fetchRow();
+                    }
+                }
+        
+                continue;
+            }
+        
+        }
+     
+        return recursiveStripTags($aFinalQuery);
+     
+    }
+ 
+    /*
+     *
+     */
+    public function recursiveStripTags($data) {
+        foreach ($data as $key => $value) {
+            if(is_array($value)) {
+                $data[$key] = recursiveStripTags($value);
+            }
+            else {
+                $data[$key] = trim(preg_replace('/\s+/', ' ', strip_tags($value)));
+            }
+        }
+        return $data;
+    }
  
     /*
      *
