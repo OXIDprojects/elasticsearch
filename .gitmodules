@@ -4,3 +4,6 @@
 [submodule "shared/oxideshop/oxideshop/source/modules/oxid-community/elasticsearch"]
 	path = shared/oxideshop/oxideshop/source/modules/oxid-community/elasticsearch
 	url = https://github.com/OXIDprojects/elasticsearch_module.git
+[submodule "shared/oxideshop/oxideshop/source/modules/oxcom/elasticsearch"]
+	path = shared/oxideshop/oxideshop/source/modules/oxcom/elasticsearch
+	url = https://github.com/OXIDprojects/elasticsearch_module.git

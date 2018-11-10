@@ -7,3 +7,4 @@ if [[ "$(docker images -q)" != "" ]]; then
 	docker rmi  $(docker images -q)
 fi && \
 docker build -t oxid6 . 
+git submodule update
