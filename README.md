@@ -24,3 +24,12 @@ Ready to go.
 
 Currently there is running a distributed Oxid 6.1 Setup at
 https://oxid.jakobspielt.de/. The depoloyment Process will follow.
+
+## Elasticsearch Module
+
+Init submodule:
+```
+cd shared/oxideshop/oxideshop/source/modules/oxcom/elasticsearch
+git submodule init
+git submodule update
+```
