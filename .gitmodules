@@ -1,3 +1,6 @@
 [submodule "shared/app"]
 	path = shared/app
 	url = https://github.com/OXIDprojects/elasticsearch_module.git
+[submodule "shared/oxideshop/oxideshop/source/modules/oxid-community/elasticsearch"]
+	path = shared/oxideshop/oxideshop/source/modules/oxid-community/elasticsearch
+	url = https://github.com/OXIDprojects/elasticsearch_module.git
