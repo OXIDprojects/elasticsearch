@@ -20,10 +20,13 @@ DEBIAN_FRONTEND=noninteractive apt-get -y --allow-downgrades --allow-remove-esse
 apt-get clean all "
 
 COPY $PWD/oxid.sql /usr/local/etc/oxid.sql
+COPY $PWD/000-default.conf /etc/apache2/sites-available/000-default.conf
 RUN bin/bash -c "mkdir /var/run/mysqld/ && \
 chown -R mysql:mysql /var/lib/mysql /var/run/mysqld && \
 service mysql start && \ 
 mysql -e 'create database oxid' && \
+mysql -e \"CREATE USER 'oxid'@'localhost' IDENTIFIED BY 'oxid'\" && \
+mysql -e \"GRANT ALL PRIVILEGES ON oxid.* TO 'oxid'@'localhost'\" && \
 mysql oxid < /usr/local/etc/oxid.sql && \
 a2enmod rewrite"
 
