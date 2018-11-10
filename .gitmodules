@@ -1,0 +1,3 @@
+[submodule "shared/app"]
+	path = shared/app
+	url = https://github.com/OXIDprojects/elasticsearch_module.git
