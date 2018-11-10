@@ -28,6 +28,7 @@ mysql -e 'create database oxid' && \
 mysql -e \"CREATE USER 'oxid'@'localhost' IDENTIFIED BY 'oxid'\" && \
 mysql -e \"GRANT ALL PRIVILEGES ON oxid.* TO 'oxid'@'localhost'\" && \
 mysql oxid < /usr/local/etc/oxid.sql && \
+echo 'network.host: 0.0.0.0' >> /etc/elasticsearch/elasticsearch.yml && \
 a2enmod rewrite"
 
 COPY $PWD/entrypoint.sh /usr/local/etc/entrypoint.sh
